@@ -26,22 +26,18 @@ echo "Ollama is ready!"
 
 # Preload the gemma3 model
 echo "Preloading gemma3 model..."
-curl -X POST http://localhost:11434/api/pull -d '{"name": "gemma3"}' &
-PULL_PID=$!
+curl -X POST http://localhost:11434/api/pull -d '{"name": "gemma3", "stream": false}'
+echo "Model gemma3 preloaded successfully!"
 
 # Start MCP bridge if config exists
 if [ -f "$MCP_CONFIG_PATH" ]; then
     echo "Starting ollama-mcp-bridge with config: $MCP_CONFIG_PATH"
-    # Wait for the model pull to complete before starting bridge
-    wait $PULL_PID
-    echo "Model preload initiated. Starting MCP bridge..."
     ollama-mcp-bridge --config "$MCP_CONFIG_PATH" &
     MCP_PID=$!
 else
     echo "WARNING: MCP config not found at $MCP_CONFIG_PATH"
     echo "MCP bridge will not be started. You can mount the config file with:"
     echo "  -v /path/to/mcp-config.json:$MCP_CONFIG_PATH"
-    wait $PULL_PID
 fi
 
 # Wait for any process to exit
