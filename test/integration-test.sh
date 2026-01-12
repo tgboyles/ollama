@@ -16,6 +16,7 @@ echo ""
 CONTAINER_NAME="ollama-mcp-test"
 IMAGE_NAME="ollama-mcp-custom"
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$TEST_DIR/.." && pwd)"
 TIMEOUT=120
 
 # Cleanup function
@@ -30,7 +31,7 @@ trap cleanup EXIT
 
 # Step 1: Build the image
 echo -e "${YELLOW}[1/6] Building Docker image...${NC}"
-if docker build -t $IMAGE_NAME . > /tmp/build.log 2>&1; then
+if docker build -t $IMAGE_NAME "$PROJECT_ROOT" > /tmp/build.log 2>&1; then
     echo -e "${GREEN}✓ Image built successfully${NC}"
 else
     echo -e "${RED}✗ Failed to build image${NC}"
