@@ -118,7 +118,7 @@ make run
 ### Update the Model
 If you want to use a different model, edit `entrypoint.sh` and change:
 ```bash
-curl -X POST http://localhost:11434/api/pull -d '{"name": "gemma3"}' &
+curl -X POST http://localhost:11434/api/pull -d '{"name": "gemma3", "stream": false}'
 ```
 to your preferred model (e.g., `llama3`, `mistral`, etc.)
 
