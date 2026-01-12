@@ -21,7 +21,7 @@ The `entrypoint.sh` script handles:
 
 To change the preloaded model, edit line 29:
 ```bash
-curl -X POST http://localhost:11434/api/pull -d '{"name": "your-model"}' &
+curl -X POST http://localhost:11434/api/pull -d '{"name": "your-model", "stream": false}'
 ```
 
 Available models can be found at: https://ollama.com/library
