@@ -102,7 +102,7 @@ Edit `entrypoint.sh` line 29 to use a different model:
 
 If MCP bridge requires additional Python packages, add them to the Dockerfile:
 ```dockerfile
-RUN pip3 install --upgrade ollama-mcp-bridge your-package-name --break-system-packages
+RUN /opt/venv/bin/pip install your-package-name
 ```
 
 ### Change Ollama Port

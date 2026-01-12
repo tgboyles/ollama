@@ -7,7 +7,6 @@ MCP_CONFIG_PATH="${MCP_CONFIG_PATH:-/app/config/mcp-config.json}"
 # Start Ollama server in the background
 echo "Starting Ollama server..."
 ollama serve &
-OLLAMA_PID=$!
 
 # Wait for Ollama to be ready
 echo "Waiting for Ollama to be ready..."
