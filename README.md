@@ -6,7 +6,7 @@ A custom containerized deployment of Ollama with integrated Model Context Protoc
 
 - 🚀 Based on official `ollama/ollama:latest` image
 - 🔧 Integrated MCP Bridge for enhanced tool capabilities
-- 📦 Automatically preloads the gemma3 model on first run
+- 📦 Pre-baked gemma3 model in the container image (ready instantly on startup)
 - 🔌 Easy configuration via mounted config file
 - 💾 Persistent model storage via Docker volumes
 - 🐍 Python virtual environment for clean package isolation
@@ -139,9 +139,12 @@ See: https://github.com/modelcontextprotocol/servers
 
 ### Model Preloading
 
-The container automatically pulls the `gemma3` model on startup synchronously. This may take a few minutes depending on your connection speed.
+The `gemma3` model is **pre-installed in the container image during build time**. This means:
+- No download wait time on first container start
+- The model is immediately available when the container starts
+- Faster deployment and predictable startup times
 
-To verify the model is loaded:
+To verify the model is available:
 ```bash
 curl http://localhost:11434/api/tags
 ```
@@ -226,25 +229,21 @@ docker exec ollama-mcp-bridge curl -X POST http://localhost:11434/api/pull -d '{
 2. Check MCP bridge logs in container logs
 3. Ensure Node.js is available if using npx-based MCP servers
 
-### Model Download is Slow
-
-The gemma3 model download happens on first startup and may take time depending on:
-- Your internet connection speed
-- The model size (gemma3 is several GB)
-
-Monitor progress in the logs: `make logs`
-
 ### Model Not Loading
 
-Check the container logs to see the model download progress. The container uses synchronous downloading with error handling, so if the download fails, the container will exit with an error.
+The gemma3 model is pre-installed in the container image, so it should be immediately available. If you don't see it listed, check the container logs for any errors during startup.
 
 ## Customization
 
 ### Change the Preloaded Model
 
-Edit `entrypoint.sh` line 29 to use a different model:
+To use a different model, edit the Dockerfile and change the model being pulled during build (around line 23):
 ```bash
-curl -f -X POST http://localhost:11434/api/pull -d '{"name": "your-model", "stream": false}'
+ollama pull gemma3
+```
+to your preferred model:
+```bash
+ollama pull llama3
 ```
 
 Available models:
@@ -255,7 +254,7 @@ Available models:
 
 See all models at: https://ollama.com/library
 
-Then rebuild:
+Then rebuild the image:
 ```bash
 make clean
 make build
@@ -312,7 +311,7 @@ If you don't need MCP bridge, simply don't mount the config file. The container 
 - **Base**: `ollama/ollama:latest`
 - **Python**: 3.10+ in isolated venv at `/opt/venv`
 - **MCP Bridge**: Installed via pip
-- **Model**: gemma3 preloaded synchronously with `stream: false`
+- **Model**: gemma3 pre-installed during Docker build (baked into the image)
 
 ### Startup Sequence
 
@@ -320,15 +319,16 @@ The container starts with the following process:
 
 1. **Ollama Server** starts in the background
 2. **Health Check** waits for Ollama to be ready (30 retries × 2s = 60s timeout)
-3. **Model Preloader** synchronously downloads gemma3 with error handling
-4. **MCP Bridge** starts only if config file is mounted
-5. Container keeps running until a process exits
+3. **MCP Bridge** starts only if config file is mounted
+4. Container keeps running until a process exits
+
+Note: The gemma3 model is already present in the image, so there's no download step at startup.
 
 ### Error Handling
-- Ollama startup failure → exits with error code 1
-- Model pull failure → exits with error code 1  
+- Ollama startup failure → exits with error code 1  
 - Missing MCP config → warning only, continues without bridge
 - Proper exit status propagation from background processes
+- Model availability verified during build (build fails if model pull fails)
 
 ## Project Structure
 

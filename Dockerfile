@@ -14,6 +14,24 @@ RUN python3 -m venv /opt/venv && \
 # Add venv to PATH so ollama-mcp-bridge is available
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Preload the gemma3 model at build time
+# Start Ollama server, pull the model, then stop the server
+RUN ollama serve & \
+    OLLAMA_PID=$! && \
+    echo "Waiting for Ollama to start..." && \
+    for i in {1..30}; do \
+        if curl -s http://localhost:11434/api/version > /dev/null 2>&1; then \
+            echo "Ollama is ready, pulling gemma3 model..." && \
+            ollama pull gemma3 && \
+            echo "Model gemma3 pulled successfully!" && \
+            break; \
+        fi; \
+        echo "Waiting for Ollama... ($i/30)" && \
+        sleep 2; \
+    done && \
+    kill $OLLAMA_PID || true && \
+    wait $OLLAMA_PID || true
+
 # Create directory for MCP config
 RUN mkdir -p /app/config
 

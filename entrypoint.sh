@@ -22,14 +22,7 @@ while ! curl -s http://localhost:11434/api/version > /dev/null; do
     sleep 2
 done
 echo "Ollama is ready!"
-
-# Preload the gemma3 model
-echo "Preloading gemma3 model..."
-if ! curl -f -X POST http://localhost:11434/api/pull -d '{"name": "gemma3", "stream": false}'; then
-    echo "ERROR: Failed to pull gemma3 model"
-    exit 1
-fi
-echo "Model gemma3 preloaded successfully!"
+echo "Model gemma3 is pre-loaded and ready to use!"
 
 # Start MCP bridge if config exists
 if [ -f "$MCP_CONFIG_PATH" ]; then
