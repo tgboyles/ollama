@@ -18,6 +18,7 @@ A custom containerized deployment of Ollama with integrated Model Context Protoc
 - [Configuration](#configuration)
 - [Usage Examples](#usage-examples)
 - [Common Operations](#common-operations)
+- [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
 - [Customization](#customization)
 - [Architecture](#architecture)
@@ -215,6 +216,31 @@ After the container is running, you can pull additional models:
 docker exec ollama-mcp-bridge curl -X POST http://localhost:11434/api/pull -d '{"name": "llama3", "stream": false}'
 ```
 
+## Testing
+
+### Integration Tests
+
+A comprehensive integration test suite is included to validate the entire stack (Ollama + MCP Bridge + Model).
+
+**Run tests:**
+```bash
+make test
+```
+
+**What gets tested:**
+- Docker image builds successfully
+- Container starts and runs properly
+- Ollama server is accessible on port 11434
+- gemma3 model is pre-loaded and available
+- Basic chat functionality works
+- MCP bridge starts and runs
+- Mock weather MCP server integration (tool calling)
+
+The test uses a mock weather server (based on the [ollama-mcp-bridge example](https://github.com/jonigl/ollama-mcp-bridge/tree/main/mock-weather-mcp-server)) to validate end-to-end functionality.
+
+**Test details:**
+See [test/README.md](test/README.md) for more information about the test suite.
+
 ## Troubleshooting
 
 ### Container Won't Start
@@ -334,14 +360,19 @@ Note: The gemma3 model is already present in the image, so there's no download s
 
 ```
 .
-├── Dockerfile              # Container image definition
-├── docker-compose.yml      # Docker Compose configuration
-├── entrypoint.sh          # Container startup script
-├── mcp-config.json.example # Example MCP configuration
-├── Makefile               # Build and run commands
-├── README.md              # This file
-├── .dockerignore         # Files to exclude from Docker build
-└── .gitignore           # Files to exclude from git
+├── Dockerfile                # Container image definition
+├── docker-compose.yml        # Docker Compose configuration
+├── entrypoint.sh            # Container startup script
+├── mcp-config.json.example  # Example MCP configuration
+├── Makefile                 # Build and run commands
+├── README.md                # This file
+├── test/                    # Integration tests
+│   ├── integration-test.sh  # Main test script
+│   ├── mock-weather-server.py # Mock MCP server for testing
+│   ├── mcp-config-test.json # Test MCP configuration
+│   └── README.md            # Test documentation
+├── .dockerignore           # Files to exclude from Docker build
+└── .gitignore             # Files to exclude from git
 ```
 
 ## Contributing

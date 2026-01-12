@@ -1,4 +1,4 @@
-.PHONY: build run stop clean help
+.PHONY: build run stop clean help test
 
 # Variables
 IMAGE_NAME = ollama-mcp-custom
@@ -12,6 +12,7 @@ help:
 	@echo "  make clean     - Remove container and image"
 	@echo "  make logs      - Show container logs"
 	@echo "  make shell     - Open a shell in the running container"
+	@echo "  make test      - Run integration tests"
 
 build:
 	docker build -t $(IMAGE_NAME) .
@@ -31,3 +32,7 @@ logs:
 
 shell:
 	docker exec -it $(CONTAINER_NAME) /bin/bash
+
+test:
+	@echo "Running integration tests..."
+	@cd test && ./integration-test.sh
