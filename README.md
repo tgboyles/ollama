@@ -1,5 +1,7 @@
 # Ollama + MCP Bridge Custom Build
 
+![Integration Tests](https://github.com/tgboyles/ollama/workflows/Integration%20Tests/badge.svg)
+
 A custom containerized deployment of Ollama with integrated Model Context Protocol (MCP) bridge and automatic gemma3 model preloading.
 
 ## Features
@@ -241,6 +243,16 @@ The test uses a mock weather server (based on the [ollama-mcp-bridge example](ht
 **Test details:**
 See [test/README.md](test/README.md) for more information about the test suite.
 
+### Continuous Integration
+
+The integration tests run automatically on every commit via GitHub Actions:
+- Tests run on all pushes to `main` branch and pull requests
+- Validates the complete stack on a clean Ubuntu environment
+- Test results are visible in the GitHub Actions tab
+- Failed builds prevent merging until tests pass
+
+The CI workflow is defined in [`.github/workflows/test.yml`](.github/workflows/test.yml).
+
 ## Troubleshooting
 
 ### Container Won't Start
@@ -360,6 +372,9 @@ Note: The gemma3 model is already present in the image, so there's no download s
 
 ```
 .
+├── .github/                 # GitHub configuration
+│   └── workflows/
+│       └── test.yml         # CI/CD workflow for automated testing
 ├── Dockerfile                # Container image definition
 ├── docker-compose.yml        # Docker Compose configuration
 ├── entrypoint.sh            # Container startup script
