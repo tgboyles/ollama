@@ -26,22 +26,25 @@ echo "Ollama is ready!"
 
 # Preload the gemma3 model
 echo "Preloading gemma3 model..."
-curl -X POST http://localhost:11434/api/pull -d '{"name": "gemma3", "stream": false}'
+if ! curl -f -X POST http://localhost:11434/api/pull -d '{"name": "gemma3", "stream": false}'; then
+    echo "ERROR: Failed to pull gemma3 model"
+    exit 1
+fi
 echo "Model gemma3 preloaded successfully!"
 
 # Start MCP bridge if config exists
 if [ -f "$MCP_CONFIG_PATH" ]; then
     echo "Starting ollama-mcp-bridge with config: $MCP_CONFIG_PATH"
     ollama-mcp-bridge --config "$MCP_CONFIG_PATH" &
-    MCP_PID=$!
 else
     echo "WARNING: MCP config not found at $MCP_CONFIG_PATH"
     echo "MCP bridge will not be started. You can mount the config file with:"
     echo "  -v /path/to/mcp-config.json:$MCP_CONFIG_PATH"
 fi
 
-# Wait for any process to exit
+# Wait for any process to exit and capture its exit status
 wait -n
+EXIT_STATUS=$?
 
 # Exit with status of process that exited first
-exit $?
+exit $EXIT_STATUS
