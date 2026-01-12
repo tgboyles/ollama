@@ -29,8 +29,14 @@ RUN ollama serve & \
         echo "Waiting for Ollama... ($i/30)" && \
         sleep 2; \
     done && \
-    kill $OLLAMA_PID || true && \
-    wait $OLLAMA_PID || true
+    echo "Stopping Ollama gracefully..." && \
+    kill -TERM $OLLAMA_PID 2>/dev/null || true && \
+    sleep 2 && \
+    kill -KILL $OLLAMA_PID 2>/dev/null || true && \
+    wait $OLLAMA_PID 2>/dev/null || true && \
+    echo "Verifying model files exist..." && \
+    ls -la /root/.ollama/models/ || echo "Model directory structure:" && \
+    find /root/.ollama -type f 2>/dev/null | head -20 || true
 
 # Create directory for MCP config
 RUN mkdir -p /app/config

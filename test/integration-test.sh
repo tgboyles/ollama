@@ -68,8 +68,10 @@ done
 
 # Step 4: Verify gemma3 model is available
 echo -e "\n${YELLOW}[4/6] Verifying gemma3 model is available...${NC}"
-MODEL_CHECK=$(curl -s http://localhost:11434/api/tags | grep -c "gemma3" || echo "0")
-if [ "$MODEL_CHECK" -gt "0" ]; then
+MODEL_CHECK=$(curl -s http://localhost:11434/api/tags | grep -c "gemma3" 2>/dev/null || echo "0")
+# Trim whitespace and newlines
+MODEL_CHECK=$(echo "$MODEL_CHECK" | tr -d '[:space:]')
+if [ "$MODEL_CHECK" -gt "0" ] 2>/dev/null; then
     echo -e "${GREEN}✓ gemma3 model is available${NC}"
 else
     echo -e "${RED}✗ gemma3 model not found${NC}"
