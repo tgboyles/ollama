@@ -41,6 +41,7 @@ This project simply packages these excellent tools together in a convenient, pro
 ## Table of Contents
 
 - [Why This Project?](#why-this-project)
+- [Docker Best Practices](#docker-best-practices)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
 - [Usage Examples](#usage-examples)
@@ -398,8 +399,10 @@ Note: The gemma3 model is already present in the image, so there's no download s
 ```
 .
 ├── .github/                 # GitHub configuration
-│   └── workflows/
-│       └── test.yml         # CI/CD workflow for automated testing
+│   ├── workflows/
+│   │   └── test.yml         # CI/CD workflow for automated testing
+│   └── copilot-instructions.md # Symlink to CLAUDE.md
+├── CLAUDE.md                # Docker best practices (REQUIRED READING)
 ├── Dockerfile                # Container image definition
 ├── docker-compose.yml        # Docker Compose configuration
 ├── entrypoint.sh            # Container startup script
@@ -415,15 +418,31 @@ Note: The gemma3 model is already present in the image, so there's no download s
 └── .gitignore             # Files to exclude from git
 ```
 
+## Docker Best Practices
+
+**Important:** This project follows Docker's official best practices for container builds. 
+
+📖 **Please read [CLAUDE.md](CLAUDE.md) before making any changes to the Dockerfile or build process.**
+
+The CLAUDE.md file contains:
+- Comprehensive Docker best practices based on [Docker's official documentation](https://docs.docker.com/build/building/best-practices/)
+- Project-specific build guidelines
+- Security considerations
+- Testing procedures
+- Common build commands
+
+Following these guidelines ensures we always create the best possible version of our container.
+
 ## Contributing
 
 ### Development Workflow
 
-1. Make changes to files
-2. Test locally: `make clean && make build && make run`
-3. Verify functionality: `make logs`
-4. Commit changes
-5. Push to repository
+1. **Review [CLAUDE.md](CLAUDE.md)** for Docker best practices
+2. Make changes to files
+3. Test locally: `make clean && make build && make run`
+4. Verify functionality: `make logs`
+5. Commit changes
+6. Push to repository
 
 ### Testing Changes
 
