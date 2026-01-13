@@ -19,16 +19,13 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN ollama serve & \
     OLLAMA_PID=$! && \
     echo "Waiting for Ollama to start..." && \
-    for i in {1..30}; do \
-        if curl -s http://localhost:11434/api/version > /dev/null 2>&1; then \
-            echo "Ollama is ready, pulling gemma3 model..." && \
-            ollama pull gemma3 && \
-            echo "Model gemma3 pulled successfully!" && \
-            break; \
-        fi; \
-        echo "Waiting for Ollama... ($i/30)" && \
+    while ! curl -s http://localhost:11434/api/version > /dev/null 2>&1; do \
+        echo "Waiting for Ollama..." && \
         sleep 2; \
     done && \
+    echo "Ollama is ready, pulling gemma3 model..." && \
+    ollama pull gemma3 && \
+    echo "Model gemma3 pulled successfully!" && \
     echo "Stopping Ollama gracefully..." && \
     kill -TERM $OLLAMA_PID 2>/dev/null || true && \
     sleep 2 && \
