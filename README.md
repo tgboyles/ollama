@@ -492,8 +492,8 @@ git push origin v1.0.0
 ```
 
 2. The GitHub Actions workflow will:
-   - Build the Docker image
    - Run integration tests
+   - Build the Docker image
    - Push to `frugalfox/ollama-mcp-custom:v1.0.0`
    - Also push to `frugalfox/ollama-mcp-custom:latest` (if tag starts with `v`)
 
