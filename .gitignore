@@ -1,0 +1,10 @@
+# MCP config file (use the example as template)
+mcp-config.json
+
+# Docker volumes
+*.tar
+*.tar.gz
+
+# Temporary files
+*.tmp
+.DS_Store

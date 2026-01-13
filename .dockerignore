@@ -1,0 +1,7 @@
+.git
+.gitignore
+*.md
+.github
+Makefile
+mcp-config.json
+mcp-config.json.example

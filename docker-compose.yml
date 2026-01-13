@@ -1,0 +1,17 @@
+services:
+  ollama-mcp:
+    build: .
+    container_name: ollama-mcp-bridge
+    ports:
+      - "11434:11434"
+    volumes:
+      # Mount your MCP config file here
+      - ./mcp-config.json:/app/config/mcp-config.json:ro
+      # Optional: Mount Ollama data directory to persist models
+      - ollama-data:/root/.ollama
+    environment:
+      - MCP_CONFIG_PATH=/app/config/mcp-config.json
+    restart: unless-stopped
+
+volumes:
+  ollama-data:
