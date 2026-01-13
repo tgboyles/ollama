@@ -374,7 +374,8 @@ Note: The gemma3 model is already present in the image, so there's no download s
 .
 ├── .github/                 # GitHub configuration
 │   └── workflows/
-│       └── test.yml         # CI/CD workflow for automated testing
+│       ├── test.yml         # CI/CD workflow for automated testing
+│       └── release.yml      # Release workflow for Docker Hub publishing
 ├── Dockerfile                # Container image definition
 ├── docker-compose.yml        # Docker Compose configuration
 ├── entrypoint.sh            # Container startup script
@@ -439,6 +440,64 @@ The `entrypoint.sh` script handles:
 2. Waiting for Ollama to be ready
 3. Preloading the gemma3 model
 4. Starting the MCP bridge (if config exists)
+
+### Docker Hub Publishing
+
+This project automatically publishes container images to Docker Hub when tags are created.
+
+#### Using Pre-built Images
+
+Pull the latest image from Docker Hub:
+```bash
+docker pull frugalfox/ollama-mcp-custom:latest
+```
+
+Or pull a specific version:
+```bash
+docker pull frugalfox/ollama-mcp-custom:v1.0.0
+```
+
+#### Manual Publishing
+
+To manually push an image to Docker Hub:
+
+1. Build the image:
+```bash
+make build
+```
+
+2. Log in to Docker Hub:
+```bash
+docker login
+```
+
+3. Push with a specific tag:
+```bash
+TAG=v1.0.0 make push
+```
+
+Or push as latest:
+```bash
+TAG=latest make push
+```
+
+#### Automated Publishing (Maintainers)
+
+For repository maintainers, images are automatically built and pushed to Docker Hub when a new tag is created:
+
+1. Create and push a tag:
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+2. The GitHub Actions workflow will:
+   - Build the Docker image
+   - Run integration tests
+   - Push to `frugalfox/ollama-mcp-custom:v1.0.0`
+   - Also push to `frugalfox/ollama-mcp-custom:latest` (if tag starts with `v`)
+
+The workflow requires the `DOCKER_HUB_TOKEN` secret to be configured in the repository settings.
 
 ## References
 
