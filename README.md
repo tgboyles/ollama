@@ -14,8 +14,33 @@ A custom containerized deployment of Ollama with integrated Model Context Protoc
 - 🐍 Python virtual environment for clean package isolation
 - ✅ Health checks and error handling
 
+## Why This Project?
+
+This project combines Ollama with the MCP Bridge in a single, easy-to-deploy container to provide a powerful local development environment. Here's why this matters:
+
+### 💰 Cost-Effective Local Development
+Running language models locally eliminates API costs associated with cloud-based services. Instead of paying per token or per request, you can develop and test AI-powered applications without worrying about usage bills. This is especially valuable during development when you're iterating frequently.
+
+### ⚡ Performance and Privacy
+Local models provide faster response times by eliminating network latency and keep your data private. Your prompts and responses never leave your machine, making this ideal for working with sensitive or proprietary information.
+
+### 🔧 MCP Capabilities
+The [Model Context Protocol (MCP)](https://github.com/modelcontextprotocol) enables language models to interact with external tools and data sources. By integrating the [ollama-mcp-bridge](https://github.com/jonigl/ollama-mcp-bridge), this container allows your local Ollama models to leverage the same powerful tool-calling capabilities that cloud services provide.
+
+### 🎯 Commodity Endpoint Compatibility
+This setup is designed to feel like using any commodity AI endpoint (like Anthropic's Claude or OpenAI's GPT). The standard Ollama API means you can easily swap between local and cloud models with minimal code changes, giving you flexibility in your development workflow.
+
+### 🙏 Built on Excellent Foundations
+We're incredibly grateful to:
+- The [Ollama team](https://github.com/ollama/ollama) for creating an amazing local LLM platform that makes running models simple and efficient
+- [@jonigl](https://github.com/jonigl) for developing the [ollama-mcp-bridge](https://github.com/jonigl/ollama-mcp-bridge) that seamlessly integrates MCP capabilities with Ollama
+- The [Model Context Protocol](https://github.com/modelcontextprotocol) community for defining a standard way for LLMs to interact with tools
+
+This project simply packages these excellent tools together in a convenient, production-ready container that's ready to use out of the box.
+
 ## Table of Contents
 
+- [Why This Project?](#why-this-project)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
 - [Usage Examples](#usage-examples)
@@ -442,7 +467,8 @@ The `entrypoint.sh` script handles:
 
 ## References
 
-- [Ollama Documentation](https://github.com/ollama/ollama)
+- [Ollama Official Documentation](https://docs.ollama.com/)
+- [Ollama GitHub Repository](https://github.com/ollama/ollama)
 - [Ollama Official Site](https://ollama.ai/)
 - [MCP Bridge GitHub](https://github.com/jonigl/ollama-mcp-bridge)
 - [MCP Bridge Article](https://medium.com/@jonigl/ollama-mcp-bridge-effortless-tool-integration-e32b55086395)
