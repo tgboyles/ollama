@@ -18,6 +18,7 @@ IMAGE_NAME="ollama-mcp-custom"
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$TEST_DIR/.." && pwd)"
 TIMEOUT=120
+MODEL_NAME="${MODEL_NAME:-gemma3}"
 
 # Cleanup function
 cleanup() {
@@ -30,8 +31,8 @@ cleanup() {
 trap cleanup EXIT
 
 # Step 1: Build the image
-echo -e "${YELLOW}[1/6] Building Docker image...${NC}"
-if docker build -t $IMAGE_NAME "$PROJECT_ROOT" > /tmp/build.log 2>&1; then
+echo -e "${YELLOW}[1/6] Building Docker image with model: ${MODEL_NAME}...${NC}"
+if docker build --build-arg MODEL_NAME=${MODEL_NAME} -t $IMAGE_NAME "$PROJECT_ROOT" > /tmp/build.log 2>&1; then
     echo -e "${GREEN}✓ Image built successfully${NC}"
 else
     echo -e "${RED}✗ Failed to build image${NC}"
@@ -66,15 +67,15 @@ while [ $SECONDS -lt $TIMEOUT ]; do
     sleep 2
 done
 
-# Step 4: Verify gemma3 model is available
-echo -e "\n${YELLOW}[4/6] Verifying gemma3 model is available...${NC}"
-MODEL_CHECK=$(curl -s http://localhost:11434/api/tags | grep -c "gemma3" 2>/dev/null || echo "0")
+# Step 4: Verify the model is available
+echo -e "\n${YELLOW}[4/6] Verifying ${MODEL_NAME} model is available...${NC}"
+MODEL_CHECK=$(curl -s http://localhost:11434/api/tags | grep -c "${MODEL_NAME}" 2>/dev/null || echo "0")
 # Trim whitespace and newlines
 MODEL_CHECK=$(echo "$MODEL_CHECK" | tr -d '[:space:]')
 if [ "$MODEL_CHECK" -gt "0" ] 2>/dev/null; then
-    echo -e "${GREEN}✓ gemma3 model is available${NC}"
+    echo -e "${GREEN}✓ ${MODEL_NAME} model is available${NC}"
 else
-    echo -e "${RED}✗ gemma3 model not found${NC}"
+    echo -e "${RED}✗ ${MODEL_NAME} model not found${NC}"
     curl -s http://localhost:11434/api/tags
     exit 1
 fi
@@ -82,7 +83,7 @@ fi
 # Step 5: Test basic Ollama functionality
 echo -e "\n${YELLOW}[5/6] Testing basic Ollama chat...${NC}"
 RESPONSE=$(curl -s http://localhost:11434/api/chat -d '{
-  "model": "gemma3",
+  "model": "'"${MODEL_NAME}"'",
   "messages": [
     {
       "role": "user",
@@ -116,7 +117,7 @@ fi
 # Test with a weather query that should trigger the tool
 echo -e "${YELLOW}  Testing weather tool integration...${NC}"
 WEATHER_RESPONSE=$(curl -s http://localhost:11434/api/chat -d '{
-  "model": "gemma3",
+  "model": "'"${MODEL_NAME}"'",
   "messages": [
     {
       "role": "user",
@@ -145,7 +146,7 @@ echo -e "${GREEN}╠════════════════════
 echo -e "${GREEN}║  ✓ Docker image builds successfully                            ║${NC}"
 echo -e "${GREEN}║  ✓ Container starts and runs                                   ║${NC}"
 echo -e "${GREEN}║  ✓ Ollama server is accessible                                 ║${NC}"
-echo -e "${GREEN}║  ✓ gemma3 model is pre-loaded                                  ║${NC}"
+echo -e "${GREEN}║  ✓ ${MODEL_NAME} model is pre-loaded                           ║${NC}"
 echo -e "${GREEN}║  ✓ Basic chat functionality works                              ║${NC}"
 echo -e "${GREEN}║  ✓ MCP Bridge is running                                       ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"

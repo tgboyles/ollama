@@ -4,6 +4,9 @@ set -e
 # Default MCP config path
 MCP_CONFIG_PATH="${MCP_CONFIG_PATH:-/app/config/mcp-config.json}"
 
+# Get the preloaded model name from environment variable
+PRELOADED_MODEL="${PRELOADED_MODEL:-gemma3}"
+
 # Start Ollama server in the background
 echo "Starting Ollama server..."
 ollama serve &
@@ -22,7 +25,7 @@ while ! curl -s http://localhost:11434/api/version > /dev/null; do
     sleep 2
 done
 echo "Ollama is ready!"
-echo "Model gemma3 is pre-loaded and ready to use!"
+echo "Model ${PRELOADED_MODEL} is pre-loaded and ready to use!"
 
 # Start MCP bridge if config exists
 if [ -f "$MCP_CONFIG_PATH" ]; then

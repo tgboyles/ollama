@@ -33,8 +33,11 @@ A custom containerized deployment of Ollama with integrated Model Context Protoc
 ### Using Make (Easiest)
 
 ```bash
-# Build the image
+# Build the image with default model (gemma3)
 make build
+
+# Build with a specific model
+make build MODEL_NAME=llama3
 
 # Run with docker-compose
 make run
@@ -54,9 +57,13 @@ cp mcp-config.json.example mcp-config.json
 # Edit mcp-config.json with your MCP servers
 ```
 
-2. Start the container:
+2. Build and start the container:
 ```bash
+# With default model (gemma3)
 docker-compose up -d
+
+# With a specific model
+MODEL_NAME=llama3 docker-compose up -d --build
 ```
 
 3. Access Ollama API at `http://localhost:11434`
@@ -65,7 +72,11 @@ docker-compose up -d
 
 Build the image:
 ```bash
+# With default model (gemma3)
 docker build -t ollama-mcp-custom .
+
+# With a specific model
+docker build --build-arg MODEL_NAME=llama3 -t ollama-mcp-custom .
 ```
 
 Run the container:
@@ -139,10 +150,49 @@ See: https://github.com/modelcontextprotocol/servers
 ### Environment Variables
 
 - `MCP_CONFIG_PATH`: Path to MCP config file (default: `/app/config/mcp-config.json`)
+- `PRELOADED_MODEL`: The model that was pre-loaded at build time (set automatically, default: `gemma3`)
 
 ### Model Preloading
 
-The `gemma3` model is **pre-installed in the container image during build time**. This means:
+The container pre-installs a model **during build time** for instant availability. By default, `gemma3` is used, but you can choose any model from the [Ollama library](https://ollama.com/library).
+
+#### Available Models
+
+- `llama3` - Meta's Llama 3 model
+- `mistral` - Mistral AI's model
+- `gemma3` - Google's Gemma 3 model (default)
+- `codellama` - Code-focused model
+- `phi3` - Microsoft's Phi-3 model
+- `qwen2` - Alibaba's Qwen 2 model
+
+See all models at: https://ollama.com/library
+
+#### Configuring the Preloaded Model
+
+You can select which model to pre-load at **build time** using the `MODEL_NAME` build argument:
+
+**Using Make:**
+```bash
+make build MODEL_NAME=llama3
+```
+
+**Using Docker Compose:**
+```bash
+MODEL_NAME=mistral docker-compose up -d --build
+```
+
+**Using Docker CLI:**
+```bash
+docker build --build-arg MODEL_NAME=phi3 -t ollama-mcp-custom .
+```
+
+**Best Practices:**
+- Choose models based on your use case (general chat, coding, etc.)
+- Larger models provide better quality but require more resources
+- Pre-loading the model at build time ensures instant availability
+- You can always pull additional models after the container starts
+
+The model is **pre-installed in the container image during build time**. This means:
 - No download wait time on first container start
 - The model is immediately available when the container starts
 - Faster deployment and predictable startup times
@@ -151,6 +201,8 @@ To verify the model is available:
 ```bash
 curl http://localhost:11434/api/tags
 ```
+
+You should see the model you selected at build time (default: `gemma3`) listed.
 
 ## Usage Examples
 
@@ -275,27 +327,14 @@ The gemma3 model is pre-installed in the container image, so it should be immedi
 
 ### Change the Preloaded Model
 
-To use a different model, edit the Dockerfile and change the model being pulled during build (around line 23):
-```bash
-ollama pull gemma3
-```
-to your preferred model:
-```bash
-ollama pull llama3
-```
+The preloaded model is configured at **build time** using the `MODEL_NAME` build argument. See the [Configuring the Preloaded Model](#configuring-the-preloaded-model) section above for detailed instructions.
 
-Available models:
-- `llama3` - Meta's Llama 3 model
-- `mistral` - Mistral AI's model
-- `gemma3` - Google's Gemma 3 model (current default)
-- `codellama` - Code-focused model
-
-See all models at: https://ollama.com/library
-
-Then rebuild the image:
+Quick example:
 ```bash
-make clean
-make build
+# Build with llama3 instead of gemma3
+make build MODEL_NAME=llama3
+
+# Then run the container
 make run
 ```
 
