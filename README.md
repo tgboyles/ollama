@@ -3,13 +3,13 @@
 ![Integration Tests](https://github.com/tgboyles/ollama/workflows/Integration%20Tests/badge.svg)
 ![Deploy to Container Registry](https://github.com/tgboyles/ollama/workflows/Deploy%20to%20Container%20Registry/badge.svg)
 
-A custom containerized deployment of Ollama with integrated Model Context Protocol (MCP) bridge and automatic gemma3 model preloading.
+A custom containerized deployment of Ollama with integrated Model Context Protocol (MCP) bridge and configurable automatic model preloading (defaults to gemma3).
 
 ## Features
 
 - 🚀 Based on official `ollama/ollama:latest` image
 - 🔧 Integrated MCP Bridge for enhanced tool capabilities
-- 📦 Pre-baked gemma3 model in the container image (ready instantly on startup)
+- 📦 Configurable pre-baked model in the container image (defaults to gemma3, ready instantly on startup)
 - 🔌 Easy configuration via mounted config file
 - 💾 Persistent model storage via Docker volumes
 - 🐍 Python virtual environment for clean package isolation
@@ -83,7 +83,7 @@ docker run -d \
 # Build the image with default model (gemma3)
 make build
 
-# Build with a specific model
+# Build with any model from the Ollama library
 make build MODEL_NAME=llama3
 
 # Run with docker-compose
@@ -201,7 +201,7 @@ See: https://github.com/modelcontextprotocol/servers
 
 ### Model Preloading
 
-The container pre-installs a model **during build time** for instant availability. By default, `gemma3` is used, but you can choose any model from the [Ollama library](https://ollama.com/library).
+The container is fully configurable to pre-install **any model** from the [Ollama library](https://ollama.com/library) during build time for instant availability. By default, `gemma3` is used if no model is specified.
 
 #### Available Models
 
@@ -216,7 +216,7 @@ See all models at: https://ollama.com/library
 
 #### Configuring the Preloaded Model
 
-You can select which model to pre-load at **build time** using the `MODEL_NAME` build argument:
+The preloaded model is **entirely configurable**. You can select any model from the Ollama library to pre-load at **build time** using the `MODEL_NAME` build argument:
 
 **Using Make:**
 ```bash
@@ -249,7 +249,7 @@ To verify the model is available:
 curl http://localhost:11434/api/tags
 ```
 
-You should see the model you selected at build time (default: `gemma3`) listed.
+You should see the model you selected at build time listed (defaults to `gemma3` if not specified).
 
 ## Usage Examples
 
@@ -348,7 +348,7 @@ make test
 - Docker image builds successfully
 - Container starts and runs properly
 - Ollama server is accessible on port 11434
-- gemma3 model is pre-loaded and available
+- Preloaded model (defaults to gemma3) is available
 - Basic chat functionality works
 - MCP bridge starts and runs
 - Mock weather MCP server integration (tool calling)
@@ -401,13 +401,13 @@ git push origin v1.0.0
 
 ### Model Not Loading
 
-The gemma3 model is pre-installed in the container image, so it should be immediately available. If you don't see it listed, check the container logs for any errors during startup.
+The preloaded model (defaults to gemma3 if not configured) is pre-installed in the container image, so it should be immediately available. If you don't see it listed, check the container logs for any errors during startup.
 
 ## Customization
 
 ### Change the Preloaded Model
 
-The preloaded model is configured at **build time** using the `MODEL_NAME` build argument. See the [Configuring the Preloaded Model](#configuring-the-preloaded-model) section above for detailed instructions.
+The preloaded model is **entirely configurable** and is set at **build time** using the `MODEL_NAME` build argument. You can choose any model from the Ollama library. See the [Configuring the Preloaded Model](#configuring-the-preloaded-model) section above for detailed instructions.
 
 Quick example:
 ```bash
@@ -468,7 +468,7 @@ If you don't need MCP bridge, simply don't mount the config file. The container 
 - **Base**: `ollama/ollama:latest`
 - **Python**: 3.10+ in isolated venv at `/opt/venv`
 - **MCP Bridge**: Installed via pip
-- **Model**: gemma3 pre-installed during Docker build (baked into the image)
+- **Model**: Configurable model pre-installed during Docker build (defaults to gemma3, baked into the image)
 
 ### Startup Sequence
 
@@ -479,7 +479,7 @@ The container starts with the following process:
 3. **MCP Bridge** starts only if config file is mounted
 4. Container keeps running until a process exits
 
-Note: The gemma3 model is already present in the image, so there's no download step at startup.
+Note: The preloaded model (configurable, defaults to gemma3) is already present in the image, so there's no download step at startup.
 
 ### Error Handling
 - Ollama startup failure → exits with error code 1  
@@ -574,7 +574,7 @@ If you need to add additional dependencies, add them in the `RUN apt-get install
 The `entrypoint.sh` script handles:
 1. Starting the Ollama server
 2. Waiting for Ollama to be ready
-3. Preloading the gemma3 model
+3. Confirming the preloaded model is available (configurable, defaults to gemma3)
 4. Starting the MCP bridge (if config exists)
 
 ## References
