@@ -1,6 +1,7 @@
 # Ollama + MCP Bridge Custom Build
 
 ![Integration Tests](https://github.com/tgboyles/ollama/workflows/Integration%20Tests/badge.svg)
+![Deploy to Container Registry](https://github.com/tgboyles/ollama/workflows/Deploy%20to%20Container%20Registry/badge.svg)
 
 A custom containerized deployment of Ollama with integrated Model Context Protocol (MCP) bridge and automatic gemma3 model preloading.
 
@@ -55,6 +56,26 @@ This project simply packages these excellent tools together in a convenient, pro
 - [References](#references)
 
 ## Quick Start
+
+### Using Pre-built Image from GitHub Container Registry
+
+The easiest way to get started is to use the pre-built image from GitHub Container Registry:
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/tgboyles/ollama-mcp-custom:latest
+
+# Or pull a specific version
+docker pull ghcr.io/tgboyles/ollama-mcp-custom:v1.0.0
+
+# Run the container
+docker run -d \
+  -p 11434:11434 \
+  -v $(pwd)/mcp-config.json:/app/config/mcp-config.json:ro \
+  -v ollama-data:/root/.ollama \
+  --name ollama-mcp-bridge \
+  ghcr.io/tgboyles/ollama-mcp-custom:latest
+```
 
 ### Using Make (Easiest)
 
@@ -296,6 +317,22 @@ After the container is running, you can pull additional models:
 docker exec ollama-mcp-bridge curl -X POST http://localhost:11434/api/pull -d '{"name": "llama3", "stream": false}'
 ```
 
+### Push to Container Registry
+
+To push the built image to GitHub Container Registry:
+```bash
+# Login to GitHub Container Registry (requires GitHub token)
+docker login ghcr.io -u YOUR_USERNAME
+
+# Push with automatic tag extraction
+make push
+
+# Push with a specific version tag
+make push TAG=v1.0.0
+```
+
+**Note:** Pushing to the registry requires authentication and appropriate permissions.
+
 ## Testing
 
 ### Integration Tests
@@ -330,6 +367,23 @@ The integration tests run automatically on every commit via GitHub Actions:
 - Failed builds prevent merging until tests pass
 
 The CI workflow is defined in [`.github/workflows/test.yml`](.github/workflows/test.yml).
+
+### Automated Deployment
+
+The project includes automated deployment to GitHub Container Registry:
+- Triggered automatically when a new Git tag is created (e.g., `v1.0.0`)
+- Builds the Docker image
+- Runs the full integration test suite
+- Pushes the image to `ghcr.io/tgboyles/ollama-mcp-custom` with both the tag version and `latest`
+- Only deploys if all tests pass
+
+The deployment workflow is defined in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+
+**To create a new release:**
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## Troubleshooting
 

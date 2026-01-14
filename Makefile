@@ -1,9 +1,11 @@
-.PHONY: build run stop clean help test
+.PHONY: build run stop clean help test push
 
 # Variables
 IMAGE_NAME = ollama-mcp-custom
 CONTAINER_NAME = ollama-mcp-bridge
 MODEL_NAME ?= gemma3
+REGISTRY ?= ghcr.io
+REGISTRY_IMAGE ?= $(REGISTRY)/tgboyles/ollama-mcp-custom
 
 help:
 	@echo "Available commands:"
@@ -15,6 +17,7 @@ help:
 	@echo "  make logs               - Show container logs"
 	@echo "  make shell              - Open a shell in the running container"
 	@echo "  make test               - Run integration tests"
+	@echo "  make push               - Tag and push image to container registry"
 
 build:
 	docker build --build-arg MODEL_NAME=$(MODEL_NAME) -t $(IMAGE_NAME) .
@@ -38,3 +41,18 @@ shell:
 test:
 	@echo "Running integration tests..."
 	@cd test && ./integration-test.sh
+
+push:
+	@echo "Tagging image for registry..."
+	docker tag $(IMAGE_NAME) $(REGISTRY_IMAGE):latest
+	@if [ -n "$(TAG)" ]; then \
+		echo "Tagging image with version $(TAG)..."; \
+		docker tag $(IMAGE_NAME) $(REGISTRY_IMAGE):$(TAG); \
+	fi
+	@echo "Pushing image to registry..."
+	docker push $(REGISTRY_IMAGE):latest
+	@if [ -n "$(TAG)" ]; then \
+		echo "Pushing tagged version $(TAG)..."; \
+		docker push $(REGISTRY_IMAGE):$(TAG); \
+	fi
+	@echo "Image pushed successfully!"
