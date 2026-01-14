@@ -341,7 +341,11 @@ A comprehensive integration test suite is included to validate the entire stack 
 
 **Run tests:**
 ```bash
+# With default model (gemma3)
 make test
+
+# With a specific model
+make test MODEL_NAME=llama3
 ```
 
 **What gets tested:**
