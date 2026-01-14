@@ -341,14 +341,18 @@ A comprehensive integration test suite is included to validate the entire stack 
 
 **Run tests:**
 ```bash
+# With default model (gemma3)
 make test
+
+# With a specific model
+make test MODEL_NAME=llama3
 ```
 
 **What gets tested:**
 - Docker image builds successfully
 - Container starts and runs properly
 - Ollama server is accessible on port 11434
-- gemma3 model is pre-loaded and available
+- Specified model is pre-loaded and available (default: gemma3)
 - Basic chat functionality works
 - MCP bridge starts and runs
 - Mock weather MCP server integration (tool calling)
