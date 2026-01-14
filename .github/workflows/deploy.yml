@@ -46,8 +46,6 @@ jobs:
 
       - name: Push to Container Registry
         run: make push TAG=${{ steps.extract_tag.outputs.TAG }}
-        env:
-          TAG: ${{ steps.extract_tag.outputs.TAG }}
 
       - name: Upload test logs on failure
         if: failure()
