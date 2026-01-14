@@ -234,7 +234,6 @@ docker build --build-arg MODEL_NAME=phi3 -t ollama-mcp-custom .
 ```
 
 **Best Practices:**
-- The preloaded model is fully configurable - choose any model from the Ollama library
 - Select models based on your use case (general chat, coding, etc.)
 - Larger models provide better quality but require more resources
 - Pre-loading the model at build time ensures instant availability
