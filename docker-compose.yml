@@ -1,6 +1,9 @@
 services:
   ollama-mcp:
-    build: .
+    build:
+      context: .
+      args:
+        - MODEL_NAME=${MODEL_NAME:-gemma3}
     container_name: ollama-mcp-bridge
     ports:
       - "11434:11434"
