@@ -234,7 +234,7 @@ docker build --build-arg MODEL_NAME=phi3 -t ollama-mcp-custom .
 ```
 
 **Best Practices:**
-- Select models based on your use case (general chat, coding, etc.)
+- Choose models based on your use case (general chat, coding, etc.)
 - Larger models provide better quality but require more resources
 - Pre-loading the model at build time ensures instant availability
 - You can always pull additional models after the container starts
